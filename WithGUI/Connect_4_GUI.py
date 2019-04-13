@@ -1,3 +1,6 @@
+# 13 - April - 2019
+# Created by Guru Sarath
+
 import pygame
 import sys
 import time
@@ -5,6 +8,8 @@ import random
 import copy
 from os import system, name 
 
+
+#Define the colors (R,G,B)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 RED = (255,0,0)
@@ -23,14 +28,13 @@ ExitGame = False
   
 
 # GUI
-
 def createPyGameText(textX, sizeX, colorX, antiAliasing = True):
     TextFontSettings = pygame.font.Font('freesansbold.ttf', sizeX)
     TextSurface = TextFontSettings.render(textX, antiAliasing, colorX)
     TextRect = TextSurface.get_rect()
     return TextSurface, TextRect
 
-
+# Create the GUI
 def init_game():
 
 	global clock, Main_Window_surfaceObject
@@ -60,10 +64,8 @@ def init_game():
 	pygame.display.update()
 	clock.tick(60)
 
-
+#Create the coins
 def createCoin(CoinX):
-	#loading image
-
 	coin = None
 
 	if CoinX == 'blue':
@@ -75,6 +77,7 @@ def createCoin(CoinX):
 	#Main_Window_surfaceObject.blit(blue_coin, (0, 0))
 	return coin
 
+#Place the coin at a particular location
 def placeCoin(locationOfCoinDrop, CoinX):
 	row, col = locationOfCoinDrop
 	x = (col - 1) * SingleCoin_side
@@ -82,6 +85,7 @@ def placeCoin(locationOfCoinDrop, CoinX):
 	coin = createCoin(CoinX)
 	Main_Window_surfaceObject.blit(coin, (x,y))
 
+# MAIN GAME LOOP
 def game_loop(gameXObj):
 
 	while not ExitGame:
@@ -96,13 +100,16 @@ def game_loop(gameXObj):
 		if gameXObj.currentPlayer == gameXObj.players[0]:
 			clear()
 			print('Computer\'s Turn - ')
+			#Wait for computer player
 			gameXObj.ComputerPlay(gameXObj.MonteCarloPlayer)
 
 		else:
 			clear()
 			print('Your Turn')
+			# Wait for human player
 			gameXObj.HoomanPlay()
 
+		# Exit game if winner found
 		if gameXObj.Winner:
 			if gameXObj.Winner == gameXObj.players[0]:
 				print('You Lose')
@@ -115,7 +122,7 @@ def game_loop(gameXObj):
 
 			Main_Window_surfaceObject.blit(text_surf, (Display_WIDTH / 6, 50))
 			pygame.display.update()
-			time.sleep(5)
+			time.sleep(5) # Wait for 5 sec before exit
 			pygame.quit()
 			sys.exit()
 
@@ -133,7 +140,10 @@ def clear():
     else: 
         _ = system('clear') 
 
-# Game Class
+
+# =======================================================================
+# Main Game Class
+# =======================================================================
 class Connect4:
 
 	players = (1,2)
@@ -158,6 +168,8 @@ class Connect4:
 
 
 	# Prints the current status of the game
+	# USED IN CLI VERSION OF THE GAME
+	# NOT REQUIRED IN GUI VERSION !!!!!
 	def printStatus(self):
 		print('============================================================================')
 		print('Player', self.players_names[self.currentPlayer - 1], '\'s turn ', end='')
@@ -232,6 +244,7 @@ class Connect4:
 
 		CoinLocation_x = 0
 
+		# This loop will exits only when the user clicks a location on the screen
 		while True:
 
 			for event in pygame.event.get():
@@ -240,22 +253,26 @@ class Connect4:
 					pygame.quit()
 					sys.exit()
 
+				# If mouse pressed and released
 				if event.type == pygame.MOUSEBUTTONUP:
 					x, y = pygame.mouse.get_pos()
 					CoinLocation_x = 0
 
+					# This loop finds the column at wihich the user clicked (1 to 8)
 					for location in range(ConnectX + 1):
+
+						# Check in what x range the mouse click 
 						if (x < SingleCoin_side * location) and (x > SingleCoin_side * (location-1)):
 							CoinLocation_x = location
-							print(CoinLocation_x)
+							print(CoinLocation_x) # For debugging purpose
 							break;
 
-				if CoinLocation_x: break;
+				if CoinLocation_x: break; #Break the loop if location to insert coin is found
 
-			if CoinLocation_x: break;
+			if CoinLocation_x: break; #Break the loop if location to insert coin is found
 
-		placeCoin( (self.availableMovesDict[CoinLocation_x], CoinLocation_x) , 'red')
-		MoveX = self.executeMove(CoinLocation_x - 1)
+		placeCoin( (self.availableMovesDict[CoinLocation_x], CoinLocation_x) , 'red') # Place the coin at that location
+		MoveX = self.executeMove(CoinLocation_x - 1) # Execute that move # internal record
 
 		if MoveX:
 			self.checkCompletion(MoveX)
@@ -276,7 +293,7 @@ class Connect4:
 			MoveX = AI_Agent() 
 			
 			if MoveX:
-				placeCoin( (MoveX[0]+1,MoveX[1]+1) , 'blue')
+				placeCoin( (MoveX[0]+1,MoveX[1]+1) , 'blue') # Place the coin at that location returned by AI agent
 				MoveX = self.executeMove(MoveX[1]) #Execute move only requires the column to insert
 				self.checkCompletion(MoveX)
 				self.switchPlayer()
@@ -524,6 +541,8 @@ class Connect4:
 			return None #InProgress
 
 	# Print the board in a good format
+	# USED IN CLI VERSION OF THE GAME
+	# NOT REQUIRED IN GUI VERSION !!!!!
 	def printBoard(self):
 
 		clear()
@@ -567,6 +586,8 @@ class Connect4:
 
 
 	# Print winner after the game comes to an end
+	# USED IN CLI VERSION OF THE GAME
+	# NOT REQUIRED IN GUI VERSION !!!!!
 	def printWinner(self):
 
 		if self.Winner == self.players[0]:
@@ -589,8 +610,8 @@ class Connect4:
 
 		clear()
 
-		init_game()
-		game_loop(self)
+		init_game() # initiate the GUI
+		game_loop(self) # start GUI game
 
 		self.printWinner()
 
