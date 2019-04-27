@@ -271,10 +271,11 @@ class Connect4:
 
 			if CoinLocation_x: break; #Break the loop if location to insert coin is found
 
-		placeCoin( (self.availableMovesDict[CoinLocation_x], CoinLocation_x) , 'red') # Place the coin at that location
+		
 		MoveX = self.executeMove(CoinLocation_x - 1) # Execute that move # internal record
 
 		if MoveX:
+			placeCoin( (self.availableMovesDict[CoinLocation_x] + 1, CoinLocation_x ) , 'red') # Place the coin at that location
 			self.checkCompletion(MoveX)
 			self.switchPlayer()
 			return True
